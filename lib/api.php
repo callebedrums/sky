@@ -63,9 +63,9 @@ class API extends Controller {
 		}
 		
 		if(strlen($_action) > 0) {
-			$this->$_action($pk);
+			return $this->$_action($pk);
 		} else {			
-			echo "action not found";
+			return "action not found";
 		}
 	}
 	
@@ -85,8 +85,6 @@ class API extends Controller {
 				$options[$method][$r] = $action;
 			}
 		}
-		
-		var_dump($options);
 	}
 
 	/**
@@ -94,7 +92,7 @@ class API extends Controller {
 	 * query all instance
 	 * */
 	public function query() {
-		echo "query";
+		return "query";
 	}
 	
 	/**
@@ -102,7 +100,7 @@ class API extends Controller {
 	 * create new instance
 	 * */
 	public function create() {
-		echo "create";
+		return "create";
 	}
 	
 	/**
@@ -110,7 +108,7 @@ class API extends Controller {
 	 * get an instance
 	 * */
 	public function retrieve($pk) {
-		echo "retrieve " . $pk;
+		return "retrieve " . $pk;
 	}
 	
 	/**
@@ -118,7 +116,7 @@ class API extends Controller {
 	 * update an instance
 	 * */
 	public function update($pk) {
-		echo "update " . $pk;
+		return "update " . $pk;
 	}
 	
 	/**
@@ -126,6 +124,6 @@ class API extends Controller {
 	 * remove an instance
 	 * */
 	public function delete($pk) {
-		echo "delete " . $pk;
+		return "delete " . $pk;
 	}
 }

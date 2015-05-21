@@ -17,7 +17,7 @@ class Sky {
 	private function __construct() {
 		$this->config = array(
 			'indexController' => 'Index',
-			'indexAction' => 'index',
+			'indexAction' => 'action',
 			'apiEndpoint' => 'api'
 		);
 		$this->endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
@@ -73,7 +73,7 @@ class Sky {
 		$action = ($action != null ? $action : $this->config['indexAction']);
 		
 		if($controller = $this->loadController($controller)) {
-			$controller->$action();
+			echo $controller->$action();
 		} else {
 			echo "Controller not found";
 		}
@@ -83,7 +83,12 @@ class Sky {
 		if ($controller != null) {
 			if($controller = $this->loadController($controller, true)) {
 				$ep = substr($this->endpoint, strlen($this->config['apiEndpoint']));
-				$controller->run($ep);
+				
+				$data = json_decode(file_get_contents('php://input'), true);
+				$data = json_encode($controller->run($ep, $data));
+				
+				header('Content-Type: application/json');
+				echo $data;
 			} else {
 				echo "Controller not found";
 			}

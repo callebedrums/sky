@@ -2,7 +2,7 @@
 
 class Index extends Controller {
 	
-	public function index() {
-		echo "index";
+	public function action() {
+		return file_get_contents('application/templates/index.html');
 	}
 }
