@@ -1,18 +1,30 @@
 <?php
 
 require_once("controller.php");
+require_once("api.php");
 
 class Sky {
 
 	private static $instance;
 	
 	private $config;
+	public $endpoint;
+	public $isApiCall;
+	public $controller;
+	public $action;
+	public $path;
 	
 	private function __construct() {
 		$this->config = array(
 			'indexController' => 'Index',
-			'indexAction' => 'index'
+			'indexAction' => 'index',
+			'apiEndpoint' => 'api'
 		);
+		$this->endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
+		$this->isApiCall = false;
+		$this->controller = '';
+		$this->action = '';
+		$this->path = array(null, null);
 	}
 	
 	public function indexRoute() {
@@ -21,8 +33,7 @@ class Sky {
 	
 	public static function instance() {
 		if (!isset(self::$instance)) {
-			$c = __CLASS__;
-			self::$instance = new $c;
+			self::$instance = new Sky();
 		}
 		
 		return self::$instance;
@@ -39,11 +50,15 @@ class Sky {
 		}
 	}
 	
-	public function loadController($controller = null) {
+	public function loadController($controller = null, $api = false) {
 		$controller = ($controller != null ? ucfirst($controller) : $this->config['indexController']);
+		$path = 'application/controllers/';
+		if($api) {
+			$path = 'application/api/';
+		}
 		
-		if (file_exists("controllers/" . strtolower($controller) . ".php")) {
-			require_once("controllers/" . strtolower($controller) . ".php");
+		if (file_exists($path . strtolower($controller) . ".php")) {
+			require_once($path . strtolower($controller) . ".php");
 		}
 		
 		if (class_exists($controller)) {
@@ -64,10 +79,27 @@ class Sky {
 		}
 	}
 	
+	public function callApi($controller = null) {
+		if ($controller != null) {
+			if($controller = $this->loadController($controller, true)) {
+				$ep = substr($this->endpoint, strlen($this->config['apiEndpoint']));
+				$controller->run($ep);
+			} else {
+				echo "Controller not found";
+			}
+		} else {
+			echo "controller not found";
+		}
+	}
+	
 	public function start() {
 		$ep = (isset($_GET["ep"]) ? $_GET["ep"] : $this->indexRoute());
-		$path = array_replace_recursive(array(null, null), explode("/", $ep));
+		$this->path = array_replace_recursive($this->path, explode("/", $ep));
 		
-		$this->callController($path[0], $path[1]);
+		if ($this->path[0] === $this->config['apiEndpoint']){
+			$this->callApi($this->path[1]);
+		} else {
+			$this->callController($this->path[0], $this->path[1]);
+		}
 	}
 }
