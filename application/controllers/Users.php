@@ -3,10 +3,10 @@
 class Users extends Controller{
 
 	public function action() {
-		return "action";
+		$this->view->render();
 	}
 	
 	public function myAction2() {
-		return "myAction2";
+		$this->view->render();
 	}
 }

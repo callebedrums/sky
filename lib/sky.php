@@ -1,5 +1,6 @@
 <?php
 
+require_once("view.php");
 require_once("controller.php");
 require_once("api.php");
 
@@ -57,12 +58,12 @@ class Sky {
 			$path = 'application/api/';
 		}
 		
-		if (file_exists($path . strtolower($controller) . ".php")) {
-			require_once($path . strtolower($controller) . ".php");
+		if (file_exists($path . $controller . ".php")) {
+			require_once($path . $controller . ".php");
 		}
 		
 		if (class_exists($controller)) {
-			return new $controller();
+			return $controller;
 		}
 		
 		return null;
@@ -73,7 +74,9 @@ class Sky {
 		$action = ($action != null ? $action : $this->config['indexAction']);
 		
 		if($controller = $this->loadController($controller)) {
-			echo $controller->$action();
+			$view = new View($controller, $action);
+			$controller = new $controller($view);
+			$controller->$action();
 		} else {
 			echo "Controller not found";
 		}
@@ -82,6 +85,7 @@ class Sky {
 	public function callApi($controller = null) {
 		if ($controller != null) {
 			if($controller = $this->loadController($controller, true)) {
+				$controller = new $controller();
 				$ep = substr($this->endpoint, strlen($this->config['apiEndpoint']));
 				
 				$data = json_decode(file_get_contents('php://input'), true);
@@ -94,6 +98,12 @@ class Sky {
 			}
 		} else {
 			echo "controller not found";
+		}
+	}
+	
+	public function render($controller, $action = 'action', $data) {
+		if(file_exists('application/templates/' . $controller . '/' . $action . '.html')) {
+			include('application/templates/' . $controller . '/' . $action . '.html');
 		}
 	}
 	
