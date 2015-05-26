@@ -1,10 +1,10 @@
 <?php
 
-require_once("controller.php");
+require_once("Controller.php");
 
 class API extends Controller {
 
-	protected $routes;
+	private $routes;
 	
 	public function __construct() {
 		$this->routes = array(

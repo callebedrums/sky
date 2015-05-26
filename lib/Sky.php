@@ -1,8 +1,9 @@
 <?php
 
-require_once("view.php");
-require_once("controller.php");
-require_once("api.php");
+require_once("View.php");
+require_once("Controller.php");
+require_once("Api.php");
+require_once("Router.php");
 
 class Sky {
 
@@ -17,8 +18,8 @@ class Sky {
 	
 	private function __construct() {
 		$this->config = array(
-			'indexController' => 'Index',
-			'indexAction' => 'action',
+			'defaultController' => 'DefaultController',
+			'defaultAction' => 'index',
 			'apiEndpoint' => 'api'
 		);
 		$this->endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
@@ -26,10 +27,6 @@ class Sky {
 		$this->controller = '';
 		$this->action = '';
 		$this->path = array(null, null);
-	}
-	
-	public function indexRoute() {
-		return $this->config['indexController'] . "/" . $this->config['indexAction'];
 	}
 	
 	public static function instance() {
@@ -51,8 +48,12 @@ class Sky {
 		}
 	}
 	
+	public function defaultRoute() {
+		return $this->config['defaultController'] . "/" . $this->config['defaultAction'];
+	}
+	
 	public function loadController($controller = null, $api = false) {
-		$controller = ($controller != null ? ucfirst($controller) : $this->config['indexController']);
+		$controller = ($controller != null ? ucfirst($controller) : $this->config['defaultController']);
 		$path = 'application/controllers/';
 		if($api) {
 			$path = 'application/api/';
@@ -69,14 +70,17 @@ class Sky {
 		return null;
 	}
 	
-	public function callController($controller = null, $action = null) {
-		$controller = ($controller != null ? ucfirst($controller) : $this->config['indexController']);
-		$action = ($action != null ? $action : $this->config['indexAction']);
+	public function callController($controller = null, $action = null, $params = null) {
+		$controller = ($controller != null ? ucfirst($controller) : $this->config['defaultController']);
+		$action = ($action != null ? $action : $this->config['defaultAction']);
+		$params = ($params != null ? $params : array_slice($this->path, 2));
 		
 		if($controller = $this->loadController($controller)) {
 			$view = new View($controller, $action);
 			$controller = new $controller($view);
-			$controller->$action();
+			
+			call_user_func_array(array($controller, $action), $params);
+			
 		} else {
 			echo "Controller not found";
 		}
@@ -101,18 +105,15 @@ class Sky {
 		}
 	}
 	
-	public function render($controller, $action = 'action', $data) {
-		if(file_exists('application/templates/' . $controller . '/' . $action . '.html')) {
-			include('application/templates/' . $controller . '/' . $action . '.html');
-		}
-	}
-	
 	public function start() {
-		$ep = (isset($_GET["ep"]) ? $_GET["ep"] : $this->indexRoute());
+		$endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
+		$ep = (isset($_GET["ep"]) ? $_GET["ep"] : $this->defaultRoute());
 		$this->path = array_replace_recursive($this->path, explode("/", $ep));
 		
 		if ($this->path[0] === $this->config['apiEndpoint']){
 			$this->callApi($this->path[1]);
+		} else if(($route = Router::instance()->matchRoute($endpoint))) {
+			$this->callController($route['controller'], $route['action'], $route['params']);
 		} else {
 			$this->callController($this->path[0], $this->path[1]);
 		}
