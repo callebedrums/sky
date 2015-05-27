@@ -1,5 +1,6 @@
 <?php
 
+require_once("Session.php");
 require_once("View.php");
 require_once("Controller.php");
 require_once("Api.php");

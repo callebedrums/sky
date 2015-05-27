@@ -4,7 +4,7 @@ class View {
 	private $controller;
 	private $action;
 	
-	public function __construct($controller = 'Index', $action = 'action') {
+	public function __construct($controller, $action) {
 		$this->controller = ucfirst($controller);
 		$this->action = $action;
 	}

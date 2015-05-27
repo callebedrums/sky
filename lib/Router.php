@@ -30,7 +30,7 @@ class Router {
 				return array(
 					'controller' => $action['controller'],
 					'action' => $action['action'],
-					'params' => $params
+					'params' => array_slice($params, 1)
 				);
 			};
 		}
