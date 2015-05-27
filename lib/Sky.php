@@ -1,6 +1,7 @@
 <?php
 
 require_once("Session.php");
+require_once("User.php");
 require_once("View.php");
 require_once("Controller.php");
 require_once("Api.php");
@@ -12,9 +13,6 @@ class Sky {
 	
 	private $config;
 	public $endpoint;
-	public $isApiCall;
-	public $controller;
-	public $action;
 	public $path;
 	
 	private function __construct() {
@@ -24,10 +22,9 @@ class Sky {
 			'apiEndpoint' => 'api'
 		);
 		$this->endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
-		$this->isApiCall = false;
-		$this->controller = '';
-		$this->action = '';
-		$this->path = array(null, null);
+		
+		$ep = ($this->endpoint ? $this->endpoint : $this->defaultRoute());
+		$this->path = array_replace_recursive(array(null, null), explode("/", $ep));
 	}
 	
 	public static function instance() {
@@ -36,6 +33,10 @@ class Sky {
 		}
 		
 		return self::$instance;
+	}
+	
+	public function isApiCall() {
+		return strpos($this->endpoint, $this->config['apiEndpoint'] . "/") === 0;
 	}
 	
 	public function config($config) {
@@ -107,13 +108,9 @@ class Sky {
 	}
 	
 	public function start() {
-		$endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
-		$ep = (isset($_GET["ep"]) ? $_GET["ep"] : $this->defaultRoute());
-		$this->path = array_replace_recursive($this->path, explode("/", $ep));
-		
-		if ($this->path[0] === $this->config['apiEndpoint']){
+		if ($this->isApiCall()){
 			$this->callApi($this->path[1]);
-		} else if(($route = Router::instance()->matchRoute($endpoint))) {
+		} else if(($route = Router::instance()->matchRoute($this->endpoint))) {
 			$this->callController($route['controller'], $route['action'], $route['params']);
 		} else {
 			$this->callController($this->path[0], $this->path[1]);

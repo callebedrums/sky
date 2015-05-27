@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 
 require_once("lib/Sky.php");
 require_once("application/config.php");
