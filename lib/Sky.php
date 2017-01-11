@@ -1,7 +1,6 @@
 <?php
 
 require_once("Session.php");
-require_once("User.php");
 require_once("View.php");
 require_once("Controller.php");
 require_once("Api.php");
@@ -12,6 +11,9 @@ class Sky {
 	private static $instance;
 	
 	private $config;
+
+	private $request;
+
 	public $endpoint;
 	public $path;
 	
@@ -22,6 +24,17 @@ class Sky {
 			'apiEndpoint' => 'api'
 		);
 		$this->endpoint = (isset($_GET["ep"]) ? $_GET["ep"] : "");
+
+		$this->request = array(
+			'QUERY_PARAMS' => $_GET,
+			'CONTENT_TYPE' => $_SERVER["CONTENT_TYPE"],
+			'BODY' => file_get_contents('php://input'),
+			'POST_PARAMS' => $_POST
+		);
+
+		if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"] == "application/json") {
+			$this->request['BODY_JSON'] = json_decode($this->request['BODY'], true);
+		}
 		
 		$ep = ($this->endpoint ? $this->endpoint : $this->defaultRoute());
 		$this->path = array_replace_recursive(array(null, null), explode("/", $ep));
@@ -79,7 +92,7 @@ class Sky {
 		
 		if($controller = $this->loadController($controller)) {
 			$view = new View($controller, $action);
-			$controller = new $controller($view);
+			$controller = new $controller($this->request, $view);
 			
 			call_user_func_array(array($controller, $action), $params);
 			
@@ -91,7 +104,7 @@ class Sky {
 	public function callApi($controller = null) {
 		if ($controller != null) {
 			if($controller = $this->loadController($controller, true)) {
-				$controller = new $controller();
+				$controller = new $controller($this->request);
 				$ep = substr($this->endpoint, strlen($this->config['apiEndpoint']));
 				
 				$data = json_decode(file_get_contents('php://input'), true);

@@ -6,7 +6,8 @@ class API extends Controller {
 
 	protected $routes;
 	
-	public function __construct() {
+	public function __construct($request) {
+		parent::__construct($request);
 		$this->routes = array(
 			'GET' => array(
 				$this->regex_endpoint() => 'query',

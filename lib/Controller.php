@@ -3,12 +3,15 @@
 class Controller {
 
 	protected $view;
+
+    protected $request;
 	
-	public function __construct($view) {
+	public function __construct($request, $view = null) {
+        $this->request = $request;
 		$this->view = $view;
 	}
 
 	public function __call($name, $arguments) {
-		echo "Method $name not found";
+		return "Method $name not found";
 	}
 }
