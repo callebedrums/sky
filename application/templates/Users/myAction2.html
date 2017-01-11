@@ -10,7 +10,12 @@
 	<h1>Sky API</h1>
 	<img alt="img" src="/static/img/cloud.png" />
 	<h1>Users / myAction2</h1>
-	
+
+	<?php echo count($data); ?>
+	<ul>
+		<li><?php echo $data['param1'] ?></li>
+		<li><?php echo $data['param2'] ?></li>
+	</ul>
 	<script type="text/javascript" src="/static/bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="/static/bower_components/angular/angular.min.js"></script>
 	
