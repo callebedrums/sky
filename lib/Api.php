@@ -4,7 +4,7 @@ require_once("Controller.php");
 
 class API extends Controller {
 
-	private $routes;
+	protected $routes;
 	
 	public function __construct() {
 		$this->routes = array(
@@ -34,7 +34,7 @@ class API extends Controller {
 		$endpoint = '/\/' . strtolower(get_class($this));
 		if ($instance) {
 			
-			$endpoint .= '\/(.+)';
+			$endpoint .= '\/([^\/]+)';
 		}
 		$endpoint .= '\/?/';
 		return $endpoint;
@@ -43,27 +43,24 @@ class API extends Controller {
 	public function run($endpoint = null) {
 		$method = $_SERVER['REQUEST_METHOD'];
 		$params = array();
+		$_params = array();
 		$_ep = '';
 		$_action = '';
-		$pk = null;
 		
 		foreach($this->routes[$method] as $ep => $action) {
 			
-			if(preg_match($ep, $endpoint, $params)) {
+			if(preg_match($ep, $endpoint, $_params)) {
 				if(strlen($ep) > strlen($_ep)) {
 					$_ep = $ep;
 					$_action = $action;
-					if (isset($params[1])) {
-						$pk = $params[1];
-					} else {
-						$pk = null;
-					}
+
+					$params = array_slice($_params, 1);
 				}
 			}
 		}
 		
 		if(strlen($_action) > 0) {
-			return $this->$_action($pk);
+			return $this->$_action(...$params);
 		} else {			
 			return "action not found";
 		}
@@ -85,45 +82,5 @@ class API extends Controller {
 				$options[$method][$r] = $action;
 			}
 		}
-	}
-
-	/**
-	 * GET /api/<classname>/
-	 * query all instance
-	 * */
-	public function query() {
-		return "query";
-	}
-	
-	/**
-	 * POST /api/<classname>
-	 * create new instance
-	 * */
-	public function create() {
-		return "create";
-	}
-	
-	/**
-	 * GET /api/<classname>/id/
-	 * get an instance
-	 * */
-	public function retrieve($pk) {
-		return "retrieve " . $pk;
-	}
-	
-	/**
-	 * PUT /api/<classname>/id/
-	 * update an instance
-	 * */
-	public function update($pk) {
-		return "update " . $pk;
-	}
-	
-	/**
-	 * DELETE /api/<classname>/id/
-	 * remove an instance
-	 * */
-	public function delete($pk) {
-		return "delete " . $pk;
 	}
 }
