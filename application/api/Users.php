@@ -1,6 +1,7 @@
 <?php
 
 class Users extends API {
+    
     public function __construct($request) {
         parent::__construct($request);
 
@@ -15,18 +16,6 @@ class Users extends API {
                 $this->regex_endpoint() => 'create',
                 $this->regex_endpoint(true) => 'update'
             )
-            // ,
-            // 'PUT' => array(
-            //     $this->regex_endpoint() => 'create',
-            //     $this->regex_endpoint(true) => 'update'
-            // ),
-            // 'DELETE' => array(
-            //     $this->regex_endpoint(true) => 'delete'
-            // ),
-            // 'HEAD' => array(),
-            // 'OPTIONS' => array(
-            //     $this->regex_endpoint() => 'options'
-            // )
         );
     }
 
@@ -44,5 +33,9 @@ class Users extends API {
 
     public function create () {
         return array('data'=> 'aaa', 'test' => $this->request['BODY_JSON']['test']);
+    }
+
+    public function update ($pk) {
+        return "update ". $pk;
     }
 }
