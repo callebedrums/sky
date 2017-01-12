@@ -27,10 +27,13 @@ class Sky {
 
 		$this->request = array(
 			'QUERY_PARAMS' => $_GET,
-			'CONTENT_TYPE' => $_SERVER["CONTENT_TYPE"],
 			'BODY' => file_get_contents('php://input'),
 			'POST_PARAMS' => $_POST
 		);
+
+		if (isset($_SERVER["CONTENT_TYPE"])) {
+			$this->request['CONTENT_TYPE'] = $_SERVER["CONTENT_TYPE"];
+		}
 
 		if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"] == "application/json") {
 			$this->request['BODY_JSON'] = json_decode($this->request['BODY'], true);
