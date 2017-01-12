@@ -40,7 +40,12 @@ class Sky {
 		}
 		
 		$ep = ($this->endpoint ? $this->endpoint : $this->defaultRoute());
-		$this->path = array_replace_recursive(array(null, null), explode("/", $ep));
+
+		$this->path = array(null, null);
+
+		foreach(explode("/", $ep) as $index => $value) {
+			$this->path[$index] = $value;
+		}
 	}
 	
 	public static function instance() {
@@ -55,14 +60,14 @@ class Sky {
 		return strpos($this->endpoint, $this->config['apiEndpoint'] . "/") === 0;
 	}
 	
-	public function config($config) {
+	public function config($config = null) {
 		if(!$config) {
 			$arr = new ArrayObject($this->config);
-			return $arr->getArrayConpy();
+			return $arr;
 		}
-		
-		if($new_config = array_replace_recursive($this->config, $config)) {
-			$this->config = $new_config;
+
+		foreach($config as $i => $v) {
+			$this->config[$i] = $v;
 		}
 	}
 	

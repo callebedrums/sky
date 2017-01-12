@@ -1,5 +1,7 @@
 <?php
 
+require_once(__ROOT__ . "/application/services/DataBase.php");
+
 class Users extends API {
     
     public function __construct($request) {
@@ -20,7 +22,12 @@ class Users extends API {
     }
 
     public function query () {
-        return "query all";
+        $result = DataBase::instance()->query("select * from user where username = 'callebe.gomes'");
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return "user: " . $row['username'];
+        }
+        return "no results";
     }
 
     public function retrieve ($pk) {

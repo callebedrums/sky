@@ -61,7 +61,7 @@ class API extends Controller {
 		}
 		
 		if(strlen($_action) > 0) {
-			return $this->$_action(...$params);
+			return call_user_func_array(array($this, $_action), $params);
 		} else {			
 			return "action not found";
 		}
