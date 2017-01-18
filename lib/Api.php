@@ -40,6 +40,24 @@ class API extends Controller {
 		$endpoint .= '\/?/';
 		return $endpoint;
 	}
+
+	public function runMiddlewares($action) {
+
+		if (isset($this->middlewares)) {
+
+			if(isset($this->middlewares['all'])) {
+				for($i = 0; $i < count($this->middlewares['all']); $i++) {
+					$this->middlewares['all'][$i]->run($this->request);
+				}
+			}
+
+			if (isset($this->middlewares[$action])) {
+				for($i = 0; $i < count($this->middlewares[$action]); $i++) {
+					$this->middlewares[$action][$i]->run($this->request);
+				}
+			}
+		}
+	}
 	
 	public function run($endpoint = null) {
 		$method = $_SERVER['REQUEST_METHOD'];
@@ -61,6 +79,7 @@ class API extends Controller {
 		}
 		
 		if(strlen($_action) > 0) {
+			$this->runMiddlewares($_action);
 			return call_user_func_array(array($this, $_action), $params);
 		} else {			
 			return "action not found";

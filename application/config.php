@@ -6,9 +6,9 @@ Sky::instance()->config(array(
 //	'indexAction' => 'action',
 //	'apiEndpoint' => 'api',
     'database' => array(
-        'host' => 'localhost',
-        'user' => 'username',
-        'password' => 'password',
-        'database' => 'database'
+        'host' => '200.234.202.98',
+        'user' => 'americatecnolo',
+        'password' => 'america159357',
+        'database' => 'americatecnolo'
     )
 ));

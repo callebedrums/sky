@@ -1,11 +1,14 @@
 <?php
 
-class Example extends API {
+require_once("AppApi.php");
+require_once(__ROOT__ . "/application/services/AuthenticationIdentifierMiddleware.php");
 
-    public function __construct() {
+class Example extends AppApi {
+
+    public function __construct($request) {
         // call parent constructor to define defult routes
         // Optional if you don't want the default behavior
-        parent::__construct();
+        parent::__construct($request);
 
         $this->routes['GET']['/\/example\/([^\/]+)\/([^\/]+)\/?/'] = 'testAction';
     }
@@ -17,7 +20,7 @@ class Example extends API {
      * required by default behavior
      * */
     public function query() {
-        return "query";
+        return "query ". $this->request['middleware'];
     }
     
     /**
@@ -37,7 +40,7 @@ class Example extends API {
      * required by default behavior
      * */
     public function retrieve($pk) {
-        return "retrieve " . $pk;
+        return "retrieve " . $pk ." ". $this->request['middleware'];
     }
     
     /**

@@ -2,6 +2,7 @@
 
 require_once("Session.php");
 require_once("View.php");
+require_once("Middleware.php");
 require_once("Controller.php");
 require_once("Api.php");
 require_once("Router.php");

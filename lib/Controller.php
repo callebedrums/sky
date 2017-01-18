@@ -5,6 +5,8 @@ class Controller {
 	protected $view;
 
     protected $request;
+
+    protected $middlewares;
 	
 	public function __construct($request, $view = null) {
         $this->request = $request;

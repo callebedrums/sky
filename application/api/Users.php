@@ -1,8 +1,9 @@
 <?php
 
+require_once("AppApi.php");
 require_once(__ROOT__ . "/application/services/DataBase.php");
 
-class Users extends API {
+class Users extends AppApi {
     
     public function __construct($request) {
         parent::__construct($request);
