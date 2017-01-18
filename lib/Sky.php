@@ -1,5 +1,6 @@
 <?php
 
+require_once('JWT.php');
 require_once("Session.php");
 require_once("View.php");
 require_once("Middleware.php");
@@ -39,6 +40,8 @@ class Sky {
 		if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"] == "application/json") {
 			$this->request['BODY_JSON'] = json_decode($this->request['BODY'], true);
 		}
+
+		$this->request['headers'] = apache_request_headers();
 		
 		$ep = ($this->endpoint ? $this->endpoint : $this->defaultRoute());
 

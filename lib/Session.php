@@ -12,13 +12,14 @@ class Session {
 		if (!isset(self::$instance)) {
 			self::$instance = new Session();
 		}
+
+		self::$instance->start();
 		
 		return self::$instance;
 	}
 	
 	public function start() {
-		session_start();
-		session_regenerate_id(true);
+		@session_start();
 	}
 	
 	public function destroy() {
